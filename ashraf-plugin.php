@@ -30,3 +30,48 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Copyright 2005-2015 Automattic, Inc.
 */
+
+// if ( ! defined( 'ABSPATH' )){
+//   die;
+// }
+
+defined( 'ABSPATH' ) or die('Hey, you cant access this file');
+
+if ( !class_exists('AshraffPlugin' )) {
+
+  class AshraffPlugin
+  {
+    public static function register(){
+      add_action('admin_enqueue_scripts', array( 'AshraffPlugin', 'enqueue'));
+    }
+    protected function create_post_type(){
+      add_action('init', array( $this, 'custom_post_type' ) );
+    }
+
+
+    function custom_post_type(){
+      register_post_type( 'book', ['public' => true, 'label' => 'Books'] );
+    }
+    static function enqueue(){
+      wp_enqueue_style('mypluginstyle', plugins_url('/assets/mystyle.css', __FILE__ ) );
+      wp_enqueue_script('mypluginscript', plugins_url('/assets/myscript.js', __FILE__ ) );
+    }
+    function activate(){
+      require_once plugin_dir_path( __FILE__ ) . 'inc/ashraf-plugin-activate.php';
+      AshrafPluginActivate::activate();
+    }
+  }
+
+  if ( class_exists('AshraffPlugin') ){
+      $ashraffPlugin = new AshraffPlugin();
+      $ashraffPlugin->register();
+
+  }
+
+  // activation
+  register_activation_hook( __FILE__, array( $ashraffPlugin, 'activate') );
+  // deactivation
+  require_once plugin_dir_path( __FILE__ ) . 'inc/ashraf-plugin-deactivate.php';
+  register_deactivation_hook( __FILE__, array( 'AshrafPluginDeactivate', 'deactivate') );
+
+}

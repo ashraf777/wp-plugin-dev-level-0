@@ -1,2 +1,2 @@
 <?php
-// Ashraf Silent hello
+// Silence is golden.
